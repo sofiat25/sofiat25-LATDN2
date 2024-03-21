@@ -4,12 +4,21 @@ import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 
 import { Home } from "./pages/home";
-import { Demo } from "./pages/demo";
-import { Single } from "./pages/single";
+//import { Demo } from "./pages/demo";
+//import { Single } from "./pages/single";
 import injectContext from "./store/appContext";
+import { Zapatos } from "./pages/zapatos.jsx";
+import { Vestidos } from "./pages/vestidos.jsx";
+import { Accesorios } from "./pages/accesorios.jsx";
+import { LogInUser } from "./pages/logInUser.jsx";
+import { SignUp } from "./pages/signUp.jsx";
+
+
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+;
+
 
 //create your first component
 const Layout = () => {
@@ -26,8 +35,12 @@ const Layout = () => {
                     <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<Single />} path="/single/:theid" />
+                        <Route element={<Zapatos />} path="/zapatos" />
+                        <Route element={<LogInUser />} path="/logInUser" />
+                        <Route element={<Vestidos />} path="/vestidos" />
+                        <Route element={<Accesorios />} path="/accesorios" />
+                        <Route element={<SignUp />} path="/signUp" />
+                        {/* <Route element={<Single />} path="/single/:theid" /> */}
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

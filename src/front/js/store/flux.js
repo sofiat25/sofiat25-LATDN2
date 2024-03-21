@@ -1,54 +1,88 @@
 const getState = ({ getStore, getActions, setStore }) => {
+	const url = process.env.BACKEND_URL
+
 	return {
 		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			usuario: null,
+
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
+			getUserData: async () => {
+				try {
+					const response = await fetch(url + "/user", {
+			 			headers: {
+			 				"Content-Type": "application/json",
+			 			}
+			 		});
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
+			 		const responseToJson = await response.json()
+					if (response.status == 200) {
+			 			setStore({
+			 				usuario: responseToJson
+			 			});
+						return responseToJson
+			 		} else {
+						return console.log("error status code: ", response.status)
+					}
+
+			 	} catch (error) {
+			 		console.log(error);
+			 	}
+			 },
+			 signUp: async (data) => {
+				console.log(data)
+				const response = await fetch(url + "/user", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(data),
+				})
+				const res = await response.json()
+				console.log(res);
+				return res 
+			 },
+			 login: async (data) => {
+				console.log(data)
+				const response = await fetch(url + "/logIn", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(data),
+				})
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
 				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
+		
+				const res = await response.json()
+				localStorage.setItem("accessToken", res.access_token)
+				console.log(res);
+				return res 
+			 },
+			 isAuth: async () => {
+				const token = localStorage.getItem("accessToken")
+				const response = await fetch(url + "/private", {
+					headers: {
+						"Authorization": "Bearer " + token
+					}
 				});
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
+				const responseToJson = await response.json()
+				if (response.status == 200) {
+					setStore({
+						usuario: responseToJson
+					});
+					return responseToJson
+				} else {
+					setStore({
+						usuario: false
+					});
+					return console.log("error status code: ", response.status)
+				}
+		},
+	}
+		};
 	};
-};
 
 export default getState;
